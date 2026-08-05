@@ -1,0 +1,4 @@
+allprojects {
+    group = "me.lumen"
+    version = "1.0.0"
+}

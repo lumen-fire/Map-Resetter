@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Map-Resetter.iml" filepath="$PROJECT_DIR$/.idea/modules/Map-Resetter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/plugin/Map-Resetter.plugin.iml" filepath="$PROJECT_DIR$/.idea/modules/plugin/Map-Resetter.plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/plugin/Map-Resetter.plugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/plugin/Map-Resetter.plugin.main.iml" />
+    </modules>
+  </component>
+</project>
