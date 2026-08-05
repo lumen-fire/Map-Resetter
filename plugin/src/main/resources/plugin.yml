@@ -1,0 +1,8 @@
+name: Map-Resetter
+description: $description
+version: '${version}'
+
+main: me.lumen.mapResetter.MapResetter
+api-version: '26.1'
+
+authors: [J.H]
