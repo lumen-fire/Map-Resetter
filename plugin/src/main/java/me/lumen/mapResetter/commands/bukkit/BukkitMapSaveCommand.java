@@ -1,0 +1,207 @@
+package me.lumen.mapResetter.commands.bukkit;
+
+import me.lumen.mapResetter.MapResetManager;
+import me.lumen.mapResetterAPI.CreationError;
+import me.lumen.mapResetterAPI.MapSave;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+
+import java.util.Optional;
+
+/**
+ * The command executor for the bukkit and spigot version of the command.
+ */
+@SuppressWarnings("deprecation")
+public class BukkitMapSaveCommand implements CommandExecutor {
+
+    private static @NonNull String getUsageMessage(@NonNull CommandSender sender) {
+        String baseMessage = ChatColor.RED + "Usage: /mapsave (";
+        if (sender.hasPermission("mapresetter.save")){
+            baseMessage += "save|";
+        }
+        if (sender.hasPermission("mapresetter.reset")){
+            baseMessage += "reset|";
+        }
+        if (sender.hasPermission("mapresetter.delete")){
+            baseMessage += "delete|";
+        }
+        if (sender.hasPermission("mapresetter.list")){
+            baseMessage += "list|";
+        }
+        if (sender.hasPermission("mapresetter.update")){
+            baseMessage += "update|";
+        }
+        return baseMessage + ") [args...]";
+    }
+
+    private static boolean lacksPermission(@NonNull CommandSender sender, String permission) {
+        if (!sender.hasPermission(permission)) {
+            sender.sendMessage(getUsageMessage(sender));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+        if (args.length == 0){
+            sender.sendMessage(getUsageMessage(sender));
+            return false;
+        }
+        String firstArg = args[0];
+        switch (firstArg) {
+            case "save" -> {
+                if (lacksPermission(sender, "mapresetter.save")) {
+                    return false;
+                }
+                if (args.length != 3) {
+                    sender.sendMessage(ChatColor.RED + "Usage: /" + label + " save <name> <world>");
+                    return false;
+                }
+                String saveName = args[1];
+                String worldName = args[2];
+                NamespacedKey key = NamespacedKey.fromString(worldName);
+                if (key == null){
+                    sender.sendMessage(ChatColor.RED + "Invalid world name " + worldName);
+                    return false;
+                }
+                World world = Bukkit.getWorld(key);
+                if (world == null) {
+                    sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " save <name> <world>");
+                    return false;
+                }
+
+                if (world.getEnvironment() != World.Environment.NORMAL) {
+                    sender.sendMessage(ChatColor.RED + "World " + world.getName() + " is a " + world.getEnvironment().name() + " world, only normal worlds are supported!");
+                    return false;
+                }
+
+                CreationError creationError = MapResetManager.getInstance().createMapSave(saveName, world);
+                if (creationError != null) {
+                    sender.sendMessage(ChatColor.RED + creationError.getErrorMessage(saveName));
+                    return false;
+                }
+                sender.sendMessage(ChatColor.GREEN + "Created new map save " + saveName + " using world file " + worldName);
+                return true;
+            }
+            case "delete" -> {
+                if (lacksPermission(sender, "mapresetter.delete")) {
+                    return false;
+                }
+                if (args.length != 2){
+                    sender.sendMessage(ChatColor.RED + "Usage: /" + label + " delete <save>");
+                    return false;
+                }
+                String saveName = args[1];
+                Optional<MapSave> mapSave = MapResetManager.getInstance().getMapSave(saveName);
+                if (mapSave.isEmpty()){
+                    sender.sendMessage(ChatColor.RED + "Map save " + saveName + " does not exist!");
+                    return false;
+                }
+                MapResetManager.getInstance().deleteMapSave(mapSave.get());
+                sender.sendMessage(ChatColor.GREEN + "Map save " + saveName + " has been deleted!");
+                return true;
+            }
+            case "reset" -> {
+                if (lacksPermission(sender, "mapresetter.reset")) {
+                    return false;
+                }
+                if (args.length != 3){
+                    sender.sendMessage(ChatColor.RED + "Usage: /" + label + " reset <world> <save>");
+                    return false;
+                }
+
+                String worldName = args[1];
+                NamespacedKey key = NamespacedKey.fromString(worldName);
+                if (key == null){
+                    sender.sendMessage(ChatColor.RED + "Invalid world name " + worldName);
+                    return false;
+                }
+                World world = Bukkit.getWorld(key);
+                if (world == null) {
+                    sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " reset <world> <save>");
+                    return false;
+                }
+
+                if (Bukkit.getWorlds().getFirst().equals(world)){
+                    sender.sendMessage(ChatColor.RED + worldName + " is the default world in the server, cannot be reset!");
+                    return false;
+                }
+
+                if (world.getEnvironment() != World.Environment.NORMAL) {
+                    sender.sendMessage(ChatColor.RED + "World " + world.getName() + " is a " + world.getEnvironment().name() + " world, only normal worlds are supported!");
+                    return false;
+                }
+
+                String saveName = args[2];
+                Optional<MapSave> mapSave = MapResetManager.getInstance().getMapSave(saveName);
+                if (mapSave.isEmpty()){
+                    sender.sendMessage(ChatColor.RED + "Map save " + saveName + " does not exist!");
+                    return false;
+                }
+
+                mapSave.get().resetWorld(world);
+                sender.sendMessage(ChatColor.GREEN + "Map save " + saveName + " is resetting...");
+                return true;
+            }
+            case "list" -> {
+                if (lacksPermission(sender, "mapresetter.list")) {
+                    return false;
+                }
+                sender.sendMessage(ChatColor.GREEN + "Map Saves:");
+                for (String mapId : MapResetManager.getInstance().getMapSaveIds()){
+                    sender.sendMessage(ChatColor.GREEN + " - " + mapId);
+                }
+                return true;
+            }
+            case "update" -> {
+                if (lacksPermission(sender, "mapresetter.update")) {
+                    return false;
+                }
+                if (args.length != 3){
+                    sender.sendMessage(ChatColor.RED + "Usage: /" + label + " update <save> <world>");
+                    return false;
+                }
+
+                String saveName = args[1];
+                Optional<MapSave> mapSave = MapResetManager.getInstance().getMapSave(saveName);
+                if (mapSave.isEmpty()){
+                    sender.sendMessage(ChatColor.RED + "Map save " + saveName + " does not exist!");
+                    return false;
+                }
+
+                String worldName = args[2];
+                NamespacedKey key = NamespacedKey.fromString(worldName);
+                if (key == null){
+                    sender.sendMessage(ChatColor.RED + "Invalid world name " + worldName);
+                    return false;
+                }
+                World world = Bukkit.getWorld(key);
+                if (world == null) {
+                    sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " update <save> <world>");
+                    return false;
+                }
+
+                if (world.getEnvironment() != World.Environment.NORMAL) {
+                    sender.sendMessage(ChatColor.RED + "World " + world.getName() + " is a " + world.getEnvironment().name() + " world, only normal worlds are supported!");
+                    return false;
+                }
+
+                mapSave.get().updateSave(world);
+                sender.sendMessage(ChatColor.GREEN + "Updating map save " + saveName + " to use map from world " + worldName);
+                return true;
+            }
+            default -> {
+                sender.sendMessage(getUsageMessage(sender));
+                return false;
+            }
+        }
+    }
+}

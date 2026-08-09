@@ -1,20 +1,17 @@
-import org.gradle.kotlin.dsl.dependencies
-
 plugins {
     id("java-library")
+    id("xyz.jpenilla.run-paper") version "3.0.2"
+    id("com.gradleup.shadow") version "9.6.1"
 }
 
 repositories {
     mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.papermc.io/repository/maven-public/")
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:26.1.1-R0.1-SNAPSHOT")
-}
-
-java {
-    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    compileOnly("io.papermc.paper:paper-api:26.2.build.100-stable")
+    implementation(project(":api"))
 }
 
 tasks {
@@ -23,5 +20,15 @@ tasks {
         filesMatching("plugin.yml") {
             expand(props)
         }
+    }
+    //runs a paper server
+    runServer {
+        // Configure the Minecraft version for our task.
+        // This is the only required configuration besides applying the plugin.
+        // Your plugin's jar (or shadowJar if present) will be used automatically.
+        minecraftVersion("1.21.11")
+    }
+    build {
+        dependsOn(shadowJar)
     }
 }

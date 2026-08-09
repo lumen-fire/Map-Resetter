@@ -1,16 +1,28 @@
 package me.lumen.mapResetter;
 
+import me.lumen.mapResetter.commands.bukkit.BukkitMapSaveCommand;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
-public final class MapResetter extends JavaPlugin {
+public class MapResetter extends JavaPlugin{
+    private static MapResetter instance;
+    public static @NotNull MapResetter getPlugin() {
+        if (instance == null) {
+            throw new IllegalStateException("Plugin has not been initialized");
+        }
+        return instance;
+    }
+
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
+        instance = this;
+        this.getCommand("mapsave").setExecutor(new BukkitMapSaveCommand());
+        MapResetManager.loadMapSaves();
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        instance = null;
     }
 }

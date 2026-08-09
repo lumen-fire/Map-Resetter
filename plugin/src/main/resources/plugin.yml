@@ -3,6 +3,38 @@ description: $description
 version: '${version}'
 
 main: me.lumen.mapResetter.MapResetter
-api-version: '26.1'
-
-authors: [J.H]
+api-version: '1.21'
+permissions:
+  mapresetter.command:
+    default: op
+    description: Allows the usage of the main mapsave command
+  mapresetter.save:
+    default: op
+    description: Allows saving a map save with /mapsave save <name> <world>
+    children:
+      - mapresetter.command
+  mapresetter.list:
+    default: op
+    description: Allows to list map saves with /mapsave list
+    children:
+      - mapresetter.command
+  mapresetter.update:
+    default: op
+    description: Allows to update a map save with /mapsave update <save>
+    children:
+      - mapresetter.command
+  mapresetter.delete:
+    default: op
+    description: Allows to delete a map save with /mapsave delete <save>
+    children:
+      - mapresetter.command
+  mapresetter.reset:
+    default: op
+    description: Allows resetting a map save with /mapsave reset <save>
+    children:
+      - mapresetter.command
+commands:
+  mapsave:
+    description: Manage your map saves
+    permission: mapresetter.command
+authors: [Lumen-Fire]

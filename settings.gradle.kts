@@ -1,6 +1,4 @@
 rootProject.name = "Map-Resetter"
 
-include(
-    "plugin",
-    "api"
-)
+include("plugin")
+include("api")
