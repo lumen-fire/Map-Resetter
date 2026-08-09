@@ -7,37 +7,36 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
+import org.bukkit.command.*;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * The command executor for the bukkit and spigot version of the command.
  */
 @SuppressWarnings("deprecation")
-public class BukkitMapSaveCommand implements CommandExecutor {
+public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
+
+    public static final BukkitMapSaveCommand COMMAND = new BukkitMapSaveCommand();
+
+    private BukkitMapSaveCommand() {}
+
+    public void register(@NonNull JavaPlugin plugin) {
+        PluginCommand command = plugin.getCommand("mapsave");
+        assert command != null;
+        command.setExecutor(this);
+        command.setTabCompleter(this);
+    }
 
     private static @NonNull String getUsageMessage(@NonNull CommandSender sender) {
         String baseMessage = ChatColor.RED + "Usage: /mapsave (";
-        if (sender.hasPermission("mapresetter.save")){
-            baseMessage += "save|";
-        }
-        if (sender.hasPermission("mapresetter.reset")){
-            baseMessage += "reset|";
-        }
-        if (sender.hasPermission("mapresetter.delete")){
-            baseMessage += "delete|";
-        }
-        if (sender.hasPermission("mapresetter.list")){
-            baseMessage += "list|";
-        }
-        if (sender.hasPermission("mapresetter.update")){
-            baseMessage += "update|";
-        }
+        baseMessage += String.join("|", getAllowedSubCommands(sender));
         return baseMessage + ") [args...]";
     }
 
@@ -203,5 +202,74 @@ public class BukkitMapSaveCommand implements CommandExecutor {
                 return false;
             }
         }
+    }
+
+    @Override
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String @NotNull [] args) {
+        if (args.length == 1) {
+            return getAllowedSubCommands(sender);
+        }
+        String firstArg = args[0];
+        switch (firstArg) {
+            case "save" -> {
+                if (args.length == 2){
+                    return List.of();
+                } else if (args.length == 3){
+                    return getMapSavableWorlds(false);
+                }
+            }
+            case "reset" -> {
+                if (args.length == 2){
+                    return getMapSavableWorlds(true);
+                } else if (args.length == 3){
+                    return MapResetManager.getInstance().getMapSaveIds().stream().toList();
+                }
+            }
+            case "delete" -> {
+                if (args.length == 2){
+                    return MapResetManager.getInstance().getMapSaveIds().stream().toList();
+                }
+            }
+            case "update" -> {
+                if (args.length == 2){
+                    return MapResetManager.getInstance().getMapSaveIds().stream().toList();
+                } else if (args.length == 3){
+                    return getMapSavableWorlds(false);
+                }
+            }
+        }
+        return List.of();
+    }
+
+    /**Get the subcommands this command sender is allowed to use*/
+    private static @NonNull List<String> getAllowedSubCommands(@NonNull CommandSender sender) {
+        List<String> subCommands = new ArrayList<>();
+        if (sender.hasPermission("mapresetter.save")){
+            subCommands.add("save");
+        }
+        if (sender.hasPermission("mapresetter.reset")){
+            subCommands.add("reset");
+        }
+        if (sender.hasPermission("mapresetter.delete")){
+            subCommands.add("delete");
+        }
+        if (sender.hasPermission("mapresetter.list")){
+            subCommands.add("list");
+        }
+        if (sender.hasPermission("mapresetter.update")){
+            subCommands.add("update");
+        }
+        return subCommands;
+    }
+
+    private static @NotNull List<String> getMapSavableWorlds(boolean excludeSpawnWorld){
+        ArrayList<String> worlds = new ArrayList<>();
+        for (World world : Bukkit.getWorlds()){
+            if (world.getEnvironment() != World.Environment.NORMAL || (excludeSpawnWorld && Bukkit.getWorlds().getFirst().equals(world))){
+                continue;
+            }
+            worlds.add(world.getKey().value());
+        }
+        return worlds;
     }
 }

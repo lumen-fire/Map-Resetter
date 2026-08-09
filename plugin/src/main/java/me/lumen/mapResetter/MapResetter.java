@@ -17,7 +17,7 @@ public class MapResetter extends JavaPlugin{
     @Override
     public void onEnable() {
         instance = this;
-        this.getCommand("mapsave").setExecutor(new BukkitMapSaveCommand());
+        BukkitMapSaveCommand.COMMAND.register(this);
         MapResetManager.loadMapSaves();
     }
 

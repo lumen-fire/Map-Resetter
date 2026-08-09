@@ -4,8 +4,8 @@ import java.util.function.Function;
 
 public enum CreationError {
     ILLEGAL_CHARACTERS(s -> "There are illegal characters in " + s + "!"),
-    ALREADY_EXISTS(s -> s + " is already exists!"),
-    EMPTY_NAME(s -> "The name cannot be empty!");
+    ALREADY_EXISTS(s -> s + " already exists!"),
+    EMPTY_NAME(ignored -> "The name cannot be empty!");
 
     private final Function<String, String> error;
     CreationError(Function<String, String> error) {
