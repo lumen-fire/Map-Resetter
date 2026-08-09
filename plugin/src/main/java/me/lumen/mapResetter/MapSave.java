@@ -27,10 +27,10 @@ public class MapSave implements me.lumen.mapResetterAPI.MapSave {
 
     @Override
     public void resetWorld(@NonNull World world) {
-        Set<ResetWaitingPlayerData> waitingPlayers = new HashSet<>();
+        Set<WaitingPlayerData> waitingPlayers = new HashSet<>();
         for (Player player : world.getPlayers()) {
-            ResetWaitingPlayerData resetWaitingPlayerData = new ResetWaitingPlayerData(player);
-            waitingPlayers.add(resetWaitingPlayerData);
+            WaitingPlayerData waitingPlayerData = new WaitingPlayerData(player);
+            waitingPlayers.add(waitingPlayerData);
             Location spawn = Bukkit.getWorlds().getFirst().getSpawnLocation();
             Location teleportTo = new Location(spawn.getWorld(), spawn.getX(), spawn.getY() + 1000000 + ThreadLocalRandom.current().nextDouble(1000), spawn.getZ());
             player.teleport(teleportTo);
@@ -43,8 +43,8 @@ public class MapSave implements me.lumen.mapResetterAPI.MapSave {
         File sourceDir = new File(MapResetManager.getMapSaveFolder(), id);
         MapResetManager.copyDirectory(sourceDir, world.getWorldFolder());
         world = Bukkit.createWorld(WorldCreator.name(world.getName()));
-        for (ResetWaitingPlayerData resetWaitingPlayerData : waitingPlayers) {
-            resetWaitingPlayerData.teleportBack(world);
+        for (WaitingPlayerData waitingPlayerData : waitingPlayers) {
+            waitingPlayerData.teleportBack(world);
         }
     }
 

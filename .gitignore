@@ -44,4 +44,4 @@ bin/
 .DS_Store
 
 ### Run Paper ###
-/run
+/plugin/run

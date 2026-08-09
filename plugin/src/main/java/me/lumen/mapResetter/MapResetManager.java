@@ -13,6 +13,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.stream.Stream;
 
+/**
+ * The internal implementation of {@link me.lumen.mapResetterAPI.MapResetManager}
+ */
 public class MapResetManager implements me.lumen.mapResetterAPI.MapResetManager {
     private static MapResetManager instance;
     private static final File mapSaveFolder = new File(MapResetter.getPlugin().getDataFolder(), "MapSaves");
@@ -20,6 +23,10 @@ public class MapResetManager implements me.lumen.mapResetterAPI.MapResetManager 
 
     private MapResetManager(){}
 
+    /**
+     * Get or create the singleton
+     * @return the internal instance of the map reset manager
+     */
     public static MapResetManager getInstance() {
         if (instance == null) {
             instance = new MapResetManager();
@@ -43,15 +50,9 @@ public class MapResetManager implements me.lumen.mapResetterAPI.MapResetManager 
 
     @Override
     public @Nullable CreationError createMapSave(@NonNull String id, World loadFrom) {
-        if (id.isEmpty()){
-            return CreationError.EMPTY_NAME;
-        }
-        //sorry Unix based users you can't use unallowed windows characters in your names either
-        if (id.contains("\"") || id.contains("/") || id.contains("\\") || id.contains(">") || id.contains("<") || id.contains(":") || id.contains("?") || id.contains("|") || id.contains("*")) {
-            return CreationError.ILLEGAL_CHARACTERS;
-        }
-        if (getMapSaveIds().contains(id)) {
-            return CreationError.ALREADY_EXISTS;
+        CreationError error = CreationError.getError(id);
+        if (error != null) {
+            return error;
         }
 
         File target = new File(mapSaveFolder, id);
@@ -141,6 +142,7 @@ public class MapResetManager implements me.lumen.mapResetterAPI.MapResetManager 
 
                 @Override
                 public @NonNull FileVisitResult postVisitDirectory(@NonNull Path directory, IOException ioe) throws IOException {
+                    Files.setAttribute(directory, "dos:readonly", false);
                     Files.delete(directory);
                     return FileVisitResult.CONTINUE;
                 }
