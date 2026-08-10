@@ -5,7 +5,6 @@ import me.lumen.mapResetterAPI.CreationError;
 import me.lumen.mapResetterAPI.MapSave;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.*;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -66,12 +65,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 }
                 String saveName = args[1];
                 String worldName = args[2];
-                NamespacedKey key = NamespacedKey.fromString(worldName);
-                if (key == null){
-                    sender.sendMessage(ChatColor.RED + "Invalid world name " + worldName);
-                    return false;
-                }
-                World world = Bukkit.getWorld(key);
+                World world = Bukkit.getWorld(worldName);
                 if (world == null) {
                     sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " save <name> <world>");
                     return false;
@@ -118,12 +112,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 }
 
                 String worldName = args[1];
-                NamespacedKey key = NamespacedKey.fromString(worldName);
-                if (key == null){
-                    sender.sendMessage(ChatColor.RED + "Invalid world name " + worldName);
-                    return false;
-                }
-                World world = Bukkit.getWorld(key);
+                World world = Bukkit.getWorld(worldName);
                 if (world == null) {
                     sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " reset <world> <save>");
                     return false;
@@ -177,12 +166,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 }
 
                 String worldName = args[2];
-                NamespacedKey key = NamespacedKey.fromString(worldName);
-                if (key == null){
-                    sender.sendMessage(ChatColor.RED + "Invalid world name " + worldName);
-                    return false;
-                }
-                World world = Bukkit.getWorld(key);
+                World world = Bukkit.getWorld(worldName);
                 if (world == null) {
                     sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " update <save> <world>");
                     return false;
@@ -212,6 +196,9 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
         String firstArg = args[0];
         switch (firstArg) {
             case "save" -> {
+                if (!sender.hasPermission("mapresetter.save")) {
+                    return List.of();
+                }
                 if (args.length == 2){
                     return List.of();
                 } else if (args.length == 3){
@@ -219,6 +206,9 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 }
             }
             case "reset" -> {
+                if (!sender.hasPermission("mapresetter.reset")) {
+                    return List.of();
+                }
                 if (args.length == 2){
                     return getMapSavableWorlds(true);
                 } else if (args.length == 3){
@@ -226,11 +216,17 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 }
             }
             case "delete" -> {
+                if (!sender.hasPermission("mapresetter.delete")) {
+                    return List.of();
+                }
                 if (args.length == 2){
                     return MapResetManager.getInstance().getMapSaveIds().stream().toList();
                 }
             }
             case "update" -> {
+                if (!sender.hasPermission("mapresetter.update")) {
+                    return List.of();
+                }
                 if (args.length == 2){
                     return MapResetManager.getInstance().getMapSaveIds().stream().toList();
                 } else if (args.length == 3){
@@ -268,7 +264,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
             if (world.getEnvironment() != World.Environment.NORMAL || (excludeSpawnWorld && Bukkit.getWorlds().getFirst().equals(world))){
                 continue;
             }
-            worlds.add(world.getKey().value());
+            worlds.add(world.getName());
         }
         return worlds;
     }
