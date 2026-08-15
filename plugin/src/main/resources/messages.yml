@@ -1,0 +1,13 @@
+#Supports mini message on paper
+delete-map-save: "&eDeleted map save %mapsave%"
+map-save-list-header: "&aMap resets:"
+reset-map-save: "&eReset world %world% to map save %mapsave%"
+create-map-save: "&aCreated new map save %mapsave% using world file from %world%"
+update-map-save: "&aUpdated map save %mapsave% to use world file from %world%"
+version-message: "&aMapresetter is running on version %version%"
+reload-all: "&aReloaded messages, map save folders, and config"
+reload-messages: "&aReloaded messages.yml"
+reload-map-saves: "&aReloaded map save folders"
+reload-config: "&aReloaded config.yml"
+set-debug: "&aSet send debug logs to %debug%"
+

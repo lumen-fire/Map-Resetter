@@ -1,11 +1,14 @@
 package me.lumen.mapResetter;
 
-import me.lumen.mapResetter.commands.brigadier.PaperBrigadierMapSaveCommand;
+import me.lumen.mapResetter.commands.brigadier.PaperBrigadierCommandManager;
 import me.lumen.mapResetter.commands.bukkit.BukkitMapSaveCommand;
+import me.lumen.mapResetter.messages.MessagesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 public class MapResetter extends JavaPlugin{
     private static MapResetter instance;
@@ -24,11 +27,20 @@ public class MapResetter extends JavaPlugin{
         Bukkit.getServicesManager().register(me.lumen.mapResetterAPI.MapResetManager.class, MapResetManager.getInstance(), this, ServicePriority.Normal);
         //register commands
         if (hasPaperCommands()){
-            PaperBrigadierMapSaveCommand.register(this);
+            PaperBrigadierCommandManager.register(this);
         } else {
             BukkitMapSaveCommand.COMMAND.register(this);
         }
-        MapResetManager.loadMapSaves();
+        files();
+    }
+
+    private void files(){
+        if (!new File(getDataFolder(), "messages.yml").exists()) {
+            saveResource("messages.yml", false);
+        }
+        saveDefaultConfig();
+        MessagesManager.reloadMessages();
+        MapResetManager.getInstance().reloadMapSaves();
     }
 
     @Override

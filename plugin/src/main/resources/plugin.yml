@@ -5,7 +5,7 @@ version: '${version}'
 main: me.lumen.mapResetter.MapResetter
 api-version: '1.21'
 permissions:
-  mapresetter.command:
+  mapresetter.mapsave:
     default: op
     description: Allows the usage of the main mapsave command
   mapresetter.save:
@@ -33,8 +33,31 @@ permissions:
     description: Allows resetting a map save with /mapsave reset <save>
     children:
       - mapresetter.command
+  mapresetter.mapresettercommand:
+    default: op
+    description: Use /mapresetter
+  mapresetter.info:
+    default: op
+    description: Print plugin info with /mapresetter info
+    children:
+      - mapresetter.mapresettercommand
+  mapresetter.version:
+    default: op
+    description: Print the plugin version with /mapresetter version
+    children:
+      - mapresetter.mapresettercommand
+  mapresetter.reload:
+    default: op
+    description: Allows reloading the messages.yml, config.yml, and mapsave files with /mapresetter reload
+    children:
+      - mapresetter.mapresettercommand
+  mapresetter.set_debug:
+    default: op
+    description: Allows players to set whether debug logs for skipping file copying is enabled
+    children:
+      - mapresetter.mapresettercommand
 commands:
   mapsave:
     description: Manage your map saves
-    permission: mapresetter.command
+    permission: mapresetter.mapsave
 authors: [Lumen-Fire]

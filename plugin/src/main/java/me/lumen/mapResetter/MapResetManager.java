@@ -77,10 +77,8 @@ public class MapResetManager implements me.lumen.mapResetterAPI.MapResetManager 
         return mapSaveFolder;
     }
 
-    /**
-     * Load the map saves from the map saves folder
-     */
-    public static void loadMapSaves(){
+    @Override
+    public void reloadMapSaves(){
         mapSaveFolder.mkdirs();
         try (Stream<Path> stream = Files.list(mapSaveFolder.toPath())){
             mapSaves.clear();
@@ -114,8 +112,10 @@ public class MapResetManager implements me.lumen.mapResetterAPI.MapResetManager 
                 public @NonNull FileVisitResult visitFile(@NonNull Path file, @NonNull BasicFileAttributes attrs) throws IOException {
                     Path targetFile = target.toPath().resolve(source.toPath().relativize(file));
                     if (targetFile.toString().contains("metadata.dat") || targetFile.toString().contains("uid.dat") || targetFile.toString().contains("session.lock")) {
-                        //skip if it is the name contains one of the files that may cause it to lock
-                        MapResetter.getPlugin().getLogger().info("Skipping copying file " + targetFile);
+                        //skip if the name contains one of the files that may cause it to lock
+                        if (MapResetter.getPlugin().getConfig().getBoolean("debug")) {
+                            MapResetter.getPlugin().getLogger().info("Skipping copying file " + targetFile);
+                        }
                         return FileVisitResult.CONTINUE;
                     }
                     Files.copy(file, targetFile, StandardCopyOption.REPLACE_EXISTING);
