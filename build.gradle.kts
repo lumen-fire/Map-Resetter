@@ -3,3 +3,23 @@ allprojects {
     version = "1.0.0"
     description = "Mapresetter is a minecraft plugin that allows you to create map saves to reset worlds to."
 }
+
+subprojects {
+    apply(plugin = "maven-publish")
+    apply(plugin = "java")
+
+    configure<JavaPluginExtension> {
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    afterEvaluate {
+        extensions.configure<PublishingExtension> {
+            publications {
+                create<MavenPublication>("maven") {
+                    from(components["java"])
+                }
+            }
+        }
+    }
+}
