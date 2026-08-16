@@ -123,11 +123,12 @@ public class BukkitMapResetterCommand implements CommandExecutor, TabCompleter {
             return List.of();
         }
         String firstArg = args[0];
-        return switch (firstArg) {
-            case "reload" -> List.of("messages", "mapsaves", "config");
-            case "debug" -> List.of("true", "false");
-            default -> List.of();
-        };
+        if (firstArg.equals("reload") && sender.hasPermission("mapresetter.reload")) {
+            return List.of("messages", "mapsaves", "config");
+        } else if (firstArg.equals("debug") && sender.hasPermission("mapresetter.set_debug")) {
+            return List.of("true", "false");
+        }
+        return List.of();
     }
 
     private static boolean lacksPermission(@NonNull CommandSender sender, String permission) {
