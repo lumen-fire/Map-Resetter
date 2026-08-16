@@ -1,0 +1,4 @@
+#More config options may come in future
+
+#Whether to show debug messages when a file is skipped copying
+debug: false

@@ -19,4 +19,9 @@ public interface MapResetManager {
     @Nullable CreationError createMapSave(@NotNull String id, World loadFrom);
 
     void deleteMapSave(@NotNull MapSave mapSave);
+
+    /**
+     * Reload map saves
+     */
+    void reloadMapSaves();
 }
