@@ -8,6 +8,7 @@ import io.papermc.paper.command.brigadier.Commands;
 import me.lumen.mapResetter.MapResetManager;
 import me.lumen.mapResetter.MapSave;
 import me.lumen.mapResetter.commands.brigadier.args.*;
+import me.lumen.mapResetter.messages.MessagesManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.World;
@@ -34,7 +35,7 @@ public class PaperBrigadierMapSaveCommand {
                             .executes(context -> {
                                 MapSave mapSave = context.getArgument("map-save", MapSave.class);
                                 MapResetManager.getInstance().deleteMapSave(mapSave);
-                                context.getSource().getSender().sendMessage(Component.text("Deleted map save " + mapSave.getId(), NamedTextColor.YELLOW));
+                                MessagesManager.get().sendDeleteMessage(context.getSource().getSender(), mapSave);
                                 return Command.SINGLE_SUCCESS;
                             })
                     )
@@ -44,7 +45,7 @@ public class PaperBrigadierMapSaveCommand {
                     .executes(context -> {
                         CommandSender sender = context.getSource().getSender();
                         Collection<String> ids = MapResetManager.getInstance().getMapSaveIds();
-                        sender.sendMessage(Component.text("Map resets:", NamedTextColor.GREEN));
+                        MessagesManager.get().sendMapSaveListHeader(sender);
                         for (String id : ids) {
                             sender.sendMessage(Component.text(" - " + id, NamedTextColor.GREEN));
                         }
@@ -59,7 +60,7 @@ public class PaperBrigadierMapSaveCommand {
                                         World world = context.getArgument("world", World.class);
                                         MapSave mapSave = context.getArgument("map-save", MapSave.class);
                                         mapSave.resetWorld(world);
-                                        context.getSource().getSender().sendMessage(Component.text("Reset world " + world.getKey().value() + " to map save " + mapSave.getId(), NamedTextColor.YELLOW));
+                                        MessagesManager.get().sendResetMapSaveMessage(context.getSource().getSender(), world, mapSave);
                                         return Command.SINGLE_SUCCESS;
                                     })
                             )
@@ -80,14 +81,14 @@ public class PaperBrigadierMapSaveCommand {
     private static int createSave(@NonNull CommandContext<CommandSourceStack> context, World world) {
         String id = context.getArgument("name", String.class);
         MapResetManager.getInstance().createMapSave(id, world);
-        context.getSource().getSender().sendMessage(Component.text("Created new map save " + id + " using world file from " + world.getKey().value(), NamedTextColor.GREEN));
+        MessagesManager.get().sendCreateMapSaveMessage(context.getSource().getSender(), world, id);
         return Command.SINGLE_SUCCESS;
     }
 
     private static int updateSave(@NonNull CommandContext<CommandSourceStack> context, @NonNull World world) {
         MapSave mapSave = context.getArgument("map-save", MapSave.class);
         mapSave.updateSave(world);
-        context.getSource().getSender().sendMessage(Component.text("Updated map save " + mapSave.getId() + " to use world file from " + world.getKey().value(), NamedTextColor.GREEN));
+        MessagesManager.get().sendUpdateMapSaveMessage(context.getSource().getSender(), world, mapSave);
         return Command.SINGLE_SUCCESS;
     }
 }
