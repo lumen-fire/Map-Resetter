@@ -1,6 +1,7 @@
 package me.lumen.mapResetter.commands.bukkit;
 
 import me.lumen.mapResetter.MapResetManager;
+import me.lumen.mapResetter.messages.MessagesManager;
 import me.lumen.mapResetterAPI.CreationError;
 import me.lumen.mapResetterAPI.MapSave;
 import org.bukkit.Bukkit;
@@ -81,7 +82,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(ChatColor.RED + creationError.getErrorMessage(saveName));
                     return false;
                 }
-                sender.sendMessage(ChatColor.GREEN + "Created new map save " + saveName + " using world file " + worldName);
+                MessagesManager.get().sendCreateMapSaveMessage(sender, world, saveName);
                 return true;
             }
             case "delete" -> {
@@ -99,7 +100,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
                 MapResetManager.getInstance().deleteMapSave(mapSave.get());
-                sender.sendMessage(ChatColor.GREEN + "Map save " + saveName + " has been deleted!");
+                MessagesManager.get().sendDeleteMessage(sender, mapSave.get());
                 return true;
             }
             case "reset" -> {
@@ -136,14 +137,14 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 }
 
                 mapSave.get().resetWorld(world);
-                sender.sendMessage(ChatColor.GREEN + "Map save " + saveName + " is resetting...");
+                MessagesManager.get().sendResetMapSaveMessage(sender, world, mapSave.get());
                 return true;
             }
             case "list" -> {
                 if (lacksPermission(sender, "mapresetter.list")) {
                     return false;
                 }
-                sender.sendMessage(ChatColor.GREEN + "Map Saves:");
+                MessagesManager.get().sendMapSaveListHeader(sender);
                 for (String mapId : MapResetManager.getInstance().getMapSaveIds()){
                     sender.sendMessage(ChatColor.GREEN + " - " + mapId);
                 }
@@ -178,7 +179,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 }
 
                 mapSave.get().updateSave(world);
-                sender.sendMessage(ChatColor.GREEN + "Updating map save " + saveName + " to use map from world " + worldName);
+                MessagesManager.get().sendUpdateMapSaveMessage(sender, world, mapSave.get());
                 return true;
             }
             default -> {
