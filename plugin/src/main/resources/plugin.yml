@@ -60,4 +60,7 @@ commands:
   mapsave:
     description: Manage your map saves
     permission: mapresetter.mapsave
+  mapresetter:
+    description: The main plugin command - reload things, etc
+    permission: mapresetter.mapresettercommand
 authors: [Lumen-Fire]

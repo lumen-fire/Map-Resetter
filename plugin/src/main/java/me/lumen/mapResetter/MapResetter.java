@@ -1,6 +1,7 @@
 package me.lumen.mapResetter;
 
 import me.lumen.mapResetter.commands.brigadier.PaperBrigadierCommandManager;
+import me.lumen.mapResetter.commands.bukkit.BukkitMapResetterCommand;
 import me.lumen.mapResetter.commands.bukkit.BukkitMapSaveCommand;
 import me.lumen.mapResetter.messages.MessagesManager;
 import org.bukkit.Bukkit;
@@ -30,6 +31,7 @@ public class MapResetter extends JavaPlugin{
             PaperBrigadierCommandManager.register(this);
         } else {
             BukkitMapSaveCommand.COMMAND.register(this);
+            BukkitMapResetterCommand.COMMAND.register(this);
         }
         files();
     }
