@@ -10,3 +10,8 @@ repositories {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:26.1.1-R0.1-SNAPSHOT")
 }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
