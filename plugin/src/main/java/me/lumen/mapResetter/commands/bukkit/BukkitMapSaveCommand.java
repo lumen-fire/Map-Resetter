@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.*;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -60,22 +61,16 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 if (lacksPermission(sender, "mapresetter.save")) {
                     return false;
                 }
-                if (args.length != 3) {
+                if (args.length != 3 && args.length != 2) {
                     sender.sendMessage(ChatColor.RED + "Usage: /" + label + " save <name> <world>");
                     return false;
                 }
                 String saveName = args[1];
-                String worldName = args[2];
-                World world = Bukkit.getWorld(worldName);
-                if (world == null) {
-                    sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " save <name> <world>");
+                Optional<World> worldOptional = getWorldOrPlayersWorld(sender, 2, args);
+                if (worldOptional.isEmpty()){
                     return false;
                 }
-
-                if (world.getEnvironment() != World.Environment.NORMAL) {
-                    sender.sendMessage(ChatColor.RED + "World " + world.getName() + " is a " + world.getEnvironment().name() + " world, only normal worlds are supported!");
-                    return false;
-                }
+                World world = worldOptional.get();
 
                 CreationError creationError = MapResetManager.getInstance().createMapSave(saveName, world);
                 if (creationError != null) {
@@ -154,7 +149,7 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                 if (lacksPermission(sender, "mapresetter.update")) {
                     return false;
                 }
-                if (args.length != 3){
+                if (args.length != 3 && args.length != 2){
                     sender.sendMessage(ChatColor.RED + "Usage: /" + label + " update <save> <world>");
                     return false;
                 }
@@ -166,17 +161,11 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
 
-                String worldName = args[2];
-                World world = Bukkit.getWorld(worldName);
-                if (world == null) {
-                    sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist! Usage: /" + label + " update <save> <world>");
+                Optional<World> worldOptional = getWorldOrPlayersWorld(sender, 2, args);
+                if (worldOptional.isEmpty()){
                     return false;
                 }
-
-                if (world.getEnvironment() != World.Environment.NORMAL) {
-                    sender.sendMessage(ChatColor.RED + "World " + world.getName() + " is a " + world.getEnvironment().name() + " world, only normal worlds are supported!");
-                    return false;
-                }
+                World world = worldOptional.get();
 
                 mapSave.get().updateSave(world);
                 MessagesManager.get().sendUpdateMapSaveMessage(sender, world, mapSave.get());
@@ -268,5 +257,31 @@ public class BukkitMapSaveCommand implements CommandExecutor, TabCompleter {
             worlds.add(world.getName());
         }
         return worlds;
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static Optional<World> getWorldOrPlayersWorld(CommandSender sender, int worldNameIndex, String @NonNull [] args){
+        World world;
+        if (args.length == worldNameIndex + 1) {
+            String worldName = args[worldNameIndex];
+            world = Bukkit.getWorld(worldName);
+            if (world == null) {
+                sender.sendMessage(ChatColor.RED + "World " + worldName + " does not exist!");
+                return Optional.empty();
+            }
+        } else {
+            if (sender instanceof Player player){
+                world = player.getWorld();
+            } else {
+                sender.sendMessage(getUsageMessage(sender));
+                return Optional.empty();
+            }
+        }
+
+        if (world.getEnvironment() != World.Environment.NORMAL) {
+            sender.sendMessage(ChatColor.RED + "World " + world.getName() + " is a " + world.getEnvironment().name() + " world, only normal worlds are supported!");
+            return Optional.empty();
+        }
+        return Optional.of(world);
     }
 }

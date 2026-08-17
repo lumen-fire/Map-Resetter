@@ -2,6 +2,7 @@ package me.lumen.mapResetter.commands.brigadier;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
@@ -16,6 +17,8 @@ import org.bukkit.command.CommandSender;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Collection;
+
+import static me.lumen.mapResetter.commands.brigadier.args.MapSavableWorldArg.NOT_NORMAL_ENVIRONMENT;
 
 public class PaperBrigadierMapSaveCommand {
     public static final LiteralCommandNode<CommandSourceStack> COMMAND = Commands.literal("mapsave")
@@ -78,14 +81,20 @@ public class PaperBrigadierMapSaveCommand {
             .build();
 
 
-    private static int createSave(@NonNull CommandContext<CommandSourceStack> context, World world) {
+    private static int createSave(@NonNull CommandContext<CommandSourceStack> context, @NonNull World world) throws CommandSyntaxException {
+        if (world.getEnvironment() != World.Environment.NORMAL) {
+            throw NOT_NORMAL_ENVIRONMENT.create(world.getKey().value(), world.getEnvironment().name().toLowerCase());
+        }
         String id = context.getArgument("name", String.class);
         MapResetManager.getInstance().createMapSave(id, world);
         MessagesManager.get().sendCreateMapSaveMessage(context.getSource().getSender(), world, id);
         return Command.SINGLE_SUCCESS;
     }
 
-    private static int updateSave(@NonNull CommandContext<CommandSourceStack> context, @NonNull World world) {
+    private static int updateSave(@NonNull CommandContext<CommandSourceStack> context, @NonNull World world) throws CommandSyntaxException {
+        if (world.getEnvironment() != World.Environment.NORMAL) {
+            throw NOT_NORMAL_ENVIRONMENT.create(world.getKey().value(), world.getEnvironment().name().toLowerCase());
+        }
         MapSave mapSave = context.getArgument("map-save", MapSave.class);
         mapSave.updateSave(world);
         MessagesManager.get().sendUpdateMapSaveMessage(context.getSource().getSender(), world, mapSave);

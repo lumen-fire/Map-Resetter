@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class MapSavableWorldArg implements CustomArgumentType<World, World> {
     private static final DynamicCommandExceptionType SPAWN_WORLD_UNALLOWED = new DynamicCommandExceptionType(o ->
             MessageComponentSerializer.message().serialize(Component.text("World " + o + " is the spawn world, the spawn world cannot be used for this action!")));
-    private static final Dynamic2CommandExceptionType NOT_NORMAL_ENVIRONMENT = new Dynamic2CommandExceptionType((a, b) ->
+    public static final Dynamic2CommandExceptionType NOT_NORMAL_ENVIRONMENT = new Dynamic2CommandExceptionType((a, b) ->
             MessageComponentSerializer.message().serialize(Component.text("World " + a + " is a " + b + " world, only normal worlds are supported!")));
 
     private final boolean excludeSpawnWorld;
