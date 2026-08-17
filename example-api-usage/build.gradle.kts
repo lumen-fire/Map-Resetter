@@ -1,0 +1,27 @@
+plugins {
+    id("java-library")
+}
+
+repositories {
+    mavenCentral()
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://jitpack.io")
+}
+
+dependencies {
+    compileOnly("org.spigotmc:spigot-api:1.21.9-R0.1-SNAPSHOT")
+    compileOnly("com.github.lumen-fire:Map-Resetter:8368bb1e2e")
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
+tasks {
+    processResources {
+        val props = mapOf("version" to version , "description" to project.description )
+        filesMatching("plugin.yml") {
+            expand(props)
+        }
+    }
+}

@@ -1,0 +1,8 @@
+name: example-api-usage
+description: An example of how to use the mapresetter api
+version: '${version}'
+
+main: me.lumen.exampleAPI.ExamplePlugin
+api-version: '1.21'
+
+authors: [Lumen]
