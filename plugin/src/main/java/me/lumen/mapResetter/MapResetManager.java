@@ -142,7 +142,10 @@ public class MapResetManager implements me.lumen.mapResetterAPI.MapResetManager 
 
                 @Override
                 public @NonNull FileVisitResult postVisitDirectory(@NonNull Path directory, IOException ioe) throws IOException {
-                    Files.setAttribute(directory, "dos:readonly", false);
+                    String os = System.getProperty("os.name").toLowerCase();
+                    if (os.contains("win")) {
+                        Files.setAttribute(directory, "dos:readonly", false);
+                    }
                     Files.delete(directory);
                     return FileVisitResult.CONTINUE;
                 }
