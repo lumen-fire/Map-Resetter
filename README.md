@@ -5,6 +5,10 @@ Resets large worlds in seconds and even supports resetting entities.
 Only supports normal worlds however, not nether or end worlds.
 
 Useful for minigames, or whenever you need to reset a world to a map.
+
+## Download Pages
+[Modrinth](https://modrinth.com/plugin/map-resetter) | [Hangar](https://hangar.papermc.io/Lumen_Fire/Map-Resetter) | [SpigotMC](https://www.spigotmc.org/resources/map-resetter.138182/)
+
 ## Commands
 Commands support brigadier on paper.
 ### /mapsave
