@@ -7,7 +7,7 @@ The servers directory will be at ``plugin/run/`` and you have to agree to the mi
  ./gradlew :plugin:runServer
 ```
 ## Building the plugin jar
-The plugin jar will be located at ``plugin/build/libs/plugin-1.0.0.jar``  
+The plugin jar will be located at ``plugin/build/libs/plugin-1.0.0-all.jar``  
 Do not use ``plugin/build/libs/plugin-1.0.0.jar``
 ```shell
  ./gradlew :plugin:build

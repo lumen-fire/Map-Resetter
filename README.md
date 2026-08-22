@@ -1,6 +1,6 @@
 # Map Resetter
 ![Map resetting showcase](assets/map%20resetting%20showcase.gif)  
-A 1.21.6+ paper and spigot plugin to save map saves and reset worlds to those map saves.
+A 1.21.6+ paper and spigot plugin to save worlds as map saves and reset worlds to those map saves.
 Resets large worlds in seconds and even supports resetting entities.
 Only supports normal worlds however, not nether or end worlds.
 
@@ -10,6 +10,7 @@ Commands support brigadier on paper.
 ### /mapsave
 The command for managing map saves.
 If the world argument is optional, it will default to the world you are in if not specified.
+For saving a map save you can also drop a custom map/world into the maps directory and run ``/mapresetter reload mapsaves``
 
 | Subcommand                              | Permission         | Description                                            |
 |-----------------------------------------|--------------------|--------------------------------------------------------|
