@@ -10,7 +10,7 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.21.9-R0.1-SNAPSHOT")
-    compileOnly("com.github.lumen-fire:Map-Resetter:bc36b9e37e")
+    compileOnly("com.github.lumen-fire:Map-Resetter:api-v1.0.0")
 }
 
 java {
